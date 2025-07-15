@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">WebGL Deformation
+    <title>WebGL Deformation Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas" width="800" height="600"></canvas>
+    <!-- Deform vertex shader -->
+    <script id="deform-vertex" type="x-shader/x-vertex">
+    attribute vec4 aPosition;
+    varying vec2 vTexCoord;
+    void main() {
+        gl_Position = aPosition;
+        vTexCoord = aPosition.xy * 0.5 + 0.5;
+    }
+</script>
+
+    <!-- Deform fragment shader -->
+    <script id="deform-fragment" type="x-shader/x-fragment">
+    precision highp float;
+    uniform sampler2D uModeShape;
+    uniform sampler2D uPreviousDeformation;
+    uniform vec2 uModalCoordinate;
+    varying vec2 vTexCoord;
+    void main() {
+        vec4 modeShape = texture2D(uModeShape, vTexCoord);
+        vec4 prevDeformation = texture2D(uPreviousDeformation, vTexCoord);
+        vec4 result = prevDeformation + uModalCoordinate.x * modeShape + uModalCoordinate.y * modeShape;
+        gl_FragColor = result;
+    }
+</script>
+
+    <!-- Render vertex shader -->
+    <script id="render-vertex" type="x-shader/x-vertex">
+    attribute vec4 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+    void main() {
+        gl_Position = aPosition;
+        vTexCoord = aTexCoord;
+    }
+</script>
+
+    <!-- Render fragment shader -->
+    <script id="render-fragment" type="x-shader/x-fragment">
+    precision highp float;
+    uniform sampler2D uOriginalImage;
+    uniform sampler2D uDeformationTexture;
+    varying vec2 vTexCoord;
+    void main() {
+        vec4 originalColor = texture2D(uOriginalImage, vTexCoord);
+        vec4 deformation = texture2D(uDeformationTexture, vTexCoord);
+        gl_FragColor = originalColor + deformation;
+    }
+</script>
+
+    <!-- Main JavaScript file -->
+    <script src="sim.js"></script>
+</body>
+
+</html>

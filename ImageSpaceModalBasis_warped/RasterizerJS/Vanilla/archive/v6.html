@@ -1,0 +1,133 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Multi-Pass Rendering</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #canvas-container {
+            width: 80vw;
+            /* Adjust width as needed */
+            max-width: 800px;
+            /* Maximum width for larger screens */
+        }
+
+        #glCanvas {
+            display: block;
+            width: auto;
+            height: 50vw;
+            max-height: 700px;
+            /* Maintain aspect ratio */
+            border: 1px solid black;
+            /* Optional: Add a border for visualization */
+        }
+
+        #buttons-container {
+            text-align: center;
+            /* Center align the buttons */
+            margin-top: 20px;
+            /* Space between canvas and buttons */
+        }
+
+        input,
+        button {
+            margin: 5px;
+            /* Space between each input and button */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.0/math.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <canvas id="glCanvas"></canvas>
+    </div>
+    <div id="buttons-container">
+        <input type="text" id="pPoint" placeholder="Enter p point">
+        <br>
+        <input type="text" id="dVector" placeholder="Enter d vector">
+        <br>
+        <button id="impulseButton">Apply Impulse</button>
+    </div>
+
+    <script type="module" src="v6.js"></script>
+
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Multi-Pass Rendering</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #canvas-container {
+            width: 80vw;
+            max-width: 800px;
+        }
+
+        #glCanvas {
+            display: block;
+            width: auto;
+            height: 50vw;
+            max-height: 700px;
+            border: 5px solid black;
+        }
+
+        #buttons-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input,
+        button {
+            margin: 5px;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.0/math.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <canvas id="glCanvas"></canvas>
+    </div>
+    <div id="buttons-container">
+        <input type="text" id="pPoint" placeholder="Enter p point">
+        <br>
+        <input type="text" id="dVector" placeholder="Enter d vector">
+        <br>
+        <input type="number" id="strength" placeholder="Strength ">
+        <br>
+        <input type="number" id="damping" placeholder="Damping (default: 0.1)">
+        <br>
+        <input type="number" id="mass" placeholder="Mode Mass (default)">
+        <br>
+        <button id="impulseButton">Apply Impulse</button>
+    </div>
+
+    <!-- <script type="module" src="v6.js"></script> -->
+    <script type="module" src="v8.js"></script>
+
+</body>
+
+</html>

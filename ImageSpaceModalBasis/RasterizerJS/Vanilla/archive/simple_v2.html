@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Multi-Pass Rendering with WebGL2</title>
+    <style>
+        canvas {
+            padding-top: 5%;
+            width: 20%;
+            height: 20%;
+            align-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div style="text-align:center;"><canvas id="glCanvas"></canvas></div>
+
+    <script id="accumulation-vertex" type="x-shader/x-vertex">
+    attribute vec2 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+    void main() {
+        gl_Position = vec4(aPosition, 0.0, 1.0);
+        vTexCoord = aTexCoord;
+    }
+</script>
+
+    <script id="accumulation-fragment" type="x-shader/x-fragment">
+    precision highp float;
+
+    varying vec2 vTexCoord;
+
+    uniform sampler2D uAccumulatedTexture;
+    uniform sampler2D uModalTexture;
+    uniform float uFraction;
+
+    void main() {
+        vec4 accumulated = texture2D(uAccumulatedTexture, vTexCoord);
+        vec4 modal = texture2D(uModalTexture, vTexCoord);
+        gl_FragColor = accumulated +  modal;
+    }
+</script>
+
+    <script id="final-render-vertex" type="x-shader/x-vertex">
+    attribute vec2 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+    void main() {
+        gl_Position = vec4(aPosition, 0.0, 1.0);
+        vTexCoord = aTexCoord;
+    }
+</script>
+
+    <script id="final-render-fragment" type="x-shader/x-fragment">
+    precision highp float;
+
+    varying vec2 vTexCoord;
+
+    uniform sampler2D uAccumulatedDisplacement;
+    uniform sampler2D uOriginalTexture;
+
+    void main() {
+        vec4 accumulated = texture2D(uAccumulatedDisplacement, vTexCoord);
+        vec4 original = texture2D(uOriginalTexture, vTexCoord);
+        gl_FragColor = mix(original, accumulated, 0.5);
+    }
+</script>
+
+    <script id="final-render-fragment-new" type="x-shader/x-fragment">
+    precision highp float;
+
+    varying vec2 vTexCoord;
+
+    uniform sampler2D uAccumulatedDisplacement;
+    uniform sampler2D uOriginalTexture;
+    uniform vec2 uResolution;
+
+    void main() {
+        vec2 displacement = texture2D(uAccumulatedDisplacement, vTexCoord);
+        //displacement.x /= uResolution.x;
+        //displacement.y /= uResolution.y;
+        //vec2 uv = (vTexCoord + displacement);
+        vec2 uv = vTexCoord + displacement.xy * (1.0 / uResolution);
+        gl_FragColor = texture2D(uOriginalTexture, uv);
+    }
+    </script>
+
+    <script id="displacement-accum-vertex" type="x-shader/x-vertex">
+    attribute vec2 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+    
+    void main() {
+        //vTexCoord = aPosition * 0.5 + 0.5; // map from [-1, 1] to [0, 1]
+        vTexCoord =   aTexCoord*0.5 + 0.5;
+        gl_Position = vec4(aPosition, 0.0, 1.0); // set vertex position
+    }
+</script>
+
+    <script id="displacement-accum-fragment" type="x-shader/x-fragment">
+    precision highp float;
+
+    varying vec2 vTexCoord; // UV coordinates in == varying for fragment shader
+    uniform sampler2D uModalTexture; // modal shape (complex RGBA)
+    uniform sampler2D uAccumulatedDisplacement; // read out the current accumulated displacement
+    uniform vec2 uModalCoord; // q for the current mode
+
+    void main() {
+        vec2 q = uModalCoord;
+        vec4 currDisplacement = texture2D(uAccumulatedDisplacement, vTexCoord);
+        vec4 modeShape = texture2D(uModalTexture, vTexCoord);
+        
+        // Compute the additional displacement
+        vec2 addDisplacement = vec2(modeShape.r * q.x - modeShape.g * q.y, modeShape.b * q.x - modeShape.a * q.y);
+        
+        // Accumulate the new displacement
+        vec4 newDisplacement = vec4(currDisplacement.xy + addDisplacement, 0.0, 1.0);
+        
+        gl_FragColor = newDisplacement;
+    }
+</script>
+    <script src="simple_v2.js"></script>
+</body>
+
+</html>

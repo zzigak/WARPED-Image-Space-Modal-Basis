@@ -1,0 +1,112 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Deformation Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas" width="800" height="600"></canvas>
+    <script src="simulate.js"></script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Deformation Simulation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas" width="800" height="600"></canvas>
+
+    <script id="deform-vertex" type="x-shader/x-vertex"># version 300 es
+        in vec2 aPosition;
+        out vec2 vUv;
+        void main() {
+            vUv = aPosition * 0.5 + 0.5; // map from [-1, 1] to [0, 1]
+            gl_Position = vec4(aPosition, 0.0, 1.0); // set vertex position
+        }
+    </script>
+
+    <script id="deform-fragment" type="x-shader/x-fragment"># version 300 es
+        precision highp float;
+        in vec2 vUv;
+        uniform sampler2D uModeShape;
+        uniform sampler2D uReadTexture;
+        uniform vec2 uModalCoordinate;
+        out vec2 fragColor;
+        void main() {
+            vec2 q = uModalCoordinate;
+            vec2 currDisplacement = texture(uReadTexture, vUv).xy;
+            vec4 modeShape = texture(uModeShape, vUv);
+            vec2 addDisplacement = vec2(modeShape.r * q.x - modeShape.g * q.y, modeShape.b * q.x - modeShape.a * q.y);
+            vec2 newDisplacement = currDisplacement + addDisplacement;
+            fragColor = newDisplacement;
+        }
+    </script>
+
+    <script id="render-vertex" type="x-shader/x-vertex"># version 300 es
+        in vec2 aPosition;
+        in vec2 aTexCoord;
+        out vec2 vTexCoord;
+        void main() {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            vTexCoord = aTexCoord;
+        }
+    </script>
+
+    <script id="render-fragment" type="x-shader/x-fragment"># version 300 es
+        precision highp float;
+        uniform sampler2D uOriginalImage;
+        uniform sampler2D uDeformationTexture;
+        in vec2 vTexCoord;
+        layout(location = 0) out vec4 fragColor;
+        layout(location = 1) out float fragDepth;
+        void main() {
+            vec4 deformation = texture(uDeformationTexture, vTexCoord);
+            vec2 displacedCoord = vTexCoord + deformation.xy;
+            
+            vec4 color = texture(uOriginalImage, displacedCoord);
+            
+            float magnitude = length(deformation.xy);
+            float depth = -length(magnitude);
+            
+            fragColor = color;
+            fragDepth = depth;
+        }
+    </script>
+
+    <script src="simulate.js"></script>
+</body>
+
+</html>

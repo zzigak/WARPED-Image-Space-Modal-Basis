@@ -1,0 +1,221 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Multi-Pass Rendering</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #canvas-container {
+            width: 80vw;
+            max-width: 800px;
+        }
+
+        #glCanvas {
+            display: block;
+            width: auto;
+            height: 50vw;
+            max-height: 700px;
+            border: 5px solid black;
+        }
+
+        #buttons-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input,
+        button {
+            margin: 5px;
+        }
+
+        #strengthLabel {
+            display: inline-block;
+            margin: 5px;
+        }
+
+        #strengthValue {
+            display: inline-block;
+            width: 50px;
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.0/math.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <canvas id="glCanvas"></canvas>
+    </div>
+    <div id="buttons-container">
+        <input type="text" id="pPoint" placeholder="Enter p point">
+        <br>
+        <input type="text" id="dVector" placeholder="Enter d vector">
+        <br>
+        <label id="strengthLabel" for="strength">Strength:</label>
+        <input type="range" id="strength" min="0" max="3" value="0.5" step="0.01"
+            oninput="updateStrengthValue(this.value)">
+        <span id="strengthValue">0.5</span>
+        <br>
+        <label id="dampingLabel" for="damping">Damping:</label>
+        <input type="range" id="damping" min="0" max="0.5" value="0.07" step="0.01"
+            oninput="updateDampingValue(this.value)">
+        <span id="dampingValue">0.07</span>
+        <br>
+        <label id="massLabel" for="mass">Mass:</label>
+        <input type="range" id="mass" min="0" max="5" value="1" step="0.1" oninput="updateMassValue(this.value)">
+        <span id="massValue">1</span>
+        <br>
+        <button id="impulseButton">Apply Impulse</button>
+    </div>
+
+    <script type="module" src="v7.js"></script>
+    <script>
+        function updateStrengthValue(value) {
+            document.getElementById('strengthValue').textContent = value;
+        }
+        function updateDampingValue(value) {
+            document.getElementById('dampingValue').textContent = value;
+        }
+        function updateMassValue(value) {
+            document.getElementById('massValue').textContent = value;
+        }
+    </script>
+</body>
+
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Multi-Pass Rendering</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 100px;
+            flex-direction: row;
+        }
+
+        #canvas-container {
+            width: 50vw;
+            max-width: 800px;
+            margin-right: 20px;
+        }
+
+        #glCanvas {
+            display: block;
+            width: 50%;
+            margin-top: 50px;
+
+            /* Make canvas fill its container */
+            height: auto;
+            border: 5px solid black;
+        }
+
+        #buttons-container {
+            margin-top: 50px;
+
+            text-align: left;
+            /* Align text to the left */
+        }
+
+        input,
+        button {
+            margin: 5px;
+        }
+
+        #strengthLabel,
+        #dampingLabel,
+        #massLabel,
+        #modeLabel {
+            display: inline-block;
+            margin: 5px;
+        }
+
+        #strengthValue,
+        #dampingValue,
+        #massValue {
+            display: inline-block;
+            width: 50px;
+            text-align: center;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.5.0/math.min.js"></script>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <canvas id="glCanvas"></canvas>
+    </div>
+
+    <div id="buttons-container">
+        <input type="text" id="pPoint" placeholder="Enter p point">
+        <br>
+        <input type="text" id="dVector" placeholder="Enter d vector">
+        <br>
+        <label id="strengthLabel" for="strength">Strength:</label>
+        <input type="range" id="strength" min="0" max="10" value="1" step="0.1"
+            oninput="updateStrengthValue(this.value)">
+        <span id="strengthValue">1</span>
+        <br>
+        <label id="dampingLabel" for="damping">Damping:</label>
+        <input type="range" id="damping" min="0" max="0.5" value="0.07" step="0.01"
+            oninput="updateDampingValue(this.value)">
+        <span id="dampingValue">0.07</span>
+        <br>
+        <label id="massLabel" for="mass">Mass:</label>
+        <input type="range" id="mass" min="0" max="5" value="1" step="0.1" oninput="updateMassValue(this.value)">
+        <span id="massValue">1</span>
+        <br>
+        <label id="modeLabel">Modes:</label>
+        <div id="modeCheckboxes">
+            <label><input type="checkbox" value="0"> Mode 0</label><br>
+            <label><input type="checkbox" value="1"> Mode 1</label><br>
+            <label><input type="checkbox" value="2"> Mode 2</label><br>
+            <label><input type="checkbox" value="3"> Mode 3</label><br>
+            <label><input type="checkbox" value="4"> Mode 4</label><br>
+            <label><input type="checkbox" value="5"> Mode 5</label><br>
+            <label><input type="checkbox" value="6"> Mode 6</label><br>
+            <label><input type="checkbox" value="7"> Mode 7</label><br>
+            <label><input type="checkbox" value="8"> Mode 8</label><br>
+            <label><input type="checkbox" value="9"> Mode 9</label><br>
+        </div>
+        <br>
+        <button id="impulseButton">Apply Impulse</button>
+        <button id="selectAllButton">Select All</button>
+    </div>
+
+    <script type="module" src="v7.js"></script>
+    <script>
+        function updateStrengthValue(value) {
+            document.getElementById('strengthValue').textContent = value;
+        }
+        function updateDampingValue(value) {
+            document.getElementById('dampingValue').textContent = value;
+        }
+        function updateMassValue(value) {
+            document.getElementById('massValue').textContent = value;
+        }
+        document.getElementById('selectAllButton').addEventListener('click', function () {
+            const checkboxes = document.querySelectorAll('#modeCheckboxes input[type="checkbox"]');
+            checkboxes.forEach(checkbox => checkbox.checked = true);
+        });
+    </script>
+</body>
+
+</html>

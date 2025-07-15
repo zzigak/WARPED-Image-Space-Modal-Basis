@@ -1,0 +1,235 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Texture Render</title>
+    <style>
+        canvas {
+            width: 30%;
+            height: 30%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas" width="800" height="600"></canvas>
+    <script id="render-vertex" type="x-shader/x-vertex">
+        attribute vec2 aPosition;
+        attribute vec2 aTexCoord;
+        varying vec2 vTexCoord;
+        void main(void) {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            vec2 temp = (aTexCoord.xy); // Transform to texture coordinates
+            temp.y = 1.0 - temp.y;
+            vTexCoord = temp;
+        }
+    </script>
+    <script id="render-fragment" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec2 vTexCoord;
+        uniform sampler2D uOriginalImage;
+        void main(void) {
+            gl_FragColor = texture2D(uOriginalImage, vTexCoord);
+        }
+    </script>
+    <script src="simple.js"></script>
+</body>
+
+</html> -->
+
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Texture Render</title>
+    <style>
+        canvas {
+            width: 50%;
+            height: 50%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas"></canvas>
+    <script id="render-vertex" type="x-shader/x-vertex">
+        attribute vec2 aPosition;
+        attribute vec2 aTexCoord;
+        varying vec2 vTexCoord;
+
+        void main(void) {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            vTexCoord = aTexCoord;
+            vTexCoord.y = 1.0 - vTexCoord.y;
+        }
+    </script>
+    <script id="render-fragment" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec2 vTexCoord;
+        uniform sampler2D uOriginalImage;
+        uniform vec2 uResolution;
+        uniform int uApplyGrayscale; // Flag to apply grayscale effect
+        uniform int uApplyInvert;
+
+        void main(void) {
+            vec2 uv = vTexCoord;
+
+            // Get the color from the original image
+            vec4 color = texture2D(uOriginalImage, uv);
+
+            // Apply grayscale effect if enabled
+            if (uApplyGrayscale == 1) {
+                float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+                color.rgb = vec3(gray);
+            }
+            if (uApplyInvert == 1) {
+                color.rgb = 1.0 - color.rgb;
+            }
+
+            gl_FragColor = color;
+        }
+    </script>
+    <script src="simple.js"></script>
+</body>
+
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGL Texture Render</title>
+    <style>
+        canvas {
+            width: 20%;
+            height: 20%;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="glCanvas"></canvas>
+    <script id="render-vertex" type="x-shader/x-vertex">
+        attribute vec2 aPosition;
+        attribute vec2 aTexCoord;
+        varying vec2 vTexCoord;
+
+        void main(void) {
+            gl_Position = vec4(aPosition, 0.0, 1.0);
+            vTexCoord = aTexCoord;
+            vTexCoord.y = 1.0 - vTexCoord.y;
+        }
+    </script>
+    <script id="render-fragment" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec2 vTexCoord;
+        uniform sampler2D uOriginalImage;
+        // uniform sampler2d uDisplacementMap;
+        uniform vec2 uResolution;
+        uniform int uApplyGrayscale; // Flag to apply grayscale effect
+        uniform int uApplyInvert;
+
+        void main(void) {
+            vec2 uv = vTexCoord;
+
+            // Get the color from the original image
+            vec4 color = texture2D(uOriginalImage, uv);
+
+            // Apply grayscale effect if enabled
+            if (uApplyGrayscale == 1) {
+                float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+                color.rgb = vec3(gray);
+            }
+            if (uApplyInvert == 1) {
+                color.rgb = 1.0 - color.rgb;
+            }
+
+            gl_FragColor = color;
+        }
+    </script>
+    <!--  <script id="render-fragment" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec2 vTexCoord;
+        uniform sampler2D originalImageTexture;
+        uniform sampler2D displacementMapTexture;
+        uniform vec2 uResolution;
+        uniform int uApplyGrayscale; // Flag to apply grayscale effect
+        uniform int uApplyInvert;
+        
+        void main(void) {
+            vec2 uv = vTexCoord;
+        
+            // Get the displacement from the displacement map
+            vec2 displacement = texture2D(displacementMapTexture, uv).xy;
+            
+            // Scale displacement to the range of -0.5 to 0.5
+            displacement.x /= uResolution.x
+            displacement.y /= uResolution.y
+            
+            // Displace the uv coordinates
+            vec2 displacedUv = uv + displacement;
+        
+            // Get the color from the original image using displaced coordinates
+            vec4 color = texture2D(originalImageTexture, displacedUv);
+        
+            // Apply grayscale effect if enabled
+            if (uApplyGrayscale == 1) {
+                float gray = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+                color.rgb = vec3(gray);
+            }
+        
+            // Apply invert effect if enabled
+            if (uApplyInvert == 1) {
+                color.rgb = 1.0 - color.rgb;
+            }
+        
+            gl_FragColor = color;
+        }
+    </script> -->
+    <script id="displacement-accum-vertex" type="x-shader/x-vertex">
+        attribute vec2 aPosition;
+        varying vec2 vTexCoord;
+        
+        void main() {
+            vTexCoord = aPosition * 0.5 + 0.5; // map from [-1, 1] to [0, 1]
+            gl_Position = vec4(aPosition, 0.0, 1.0); // set vertex position
+        }
+    </script>
+    <script id="displacement-accum-fragment" type="x-shader/x-fragment">
+        precision highp float;
+
+        varying vec2 vTexCoord; // UV coordinates in == varying for fragment shader
+        uniform sampler2D uModalTexture; // modal shape (complex RGBA)
+        uniform sampler2D uAccumulatedDisplacement; // read out the current accumulated displacement
+        uniform vec2 uModalCoord; // q for the current mode
+
+        void main() {
+            vec2 q = uModalCoord;
+            vec4 currDisplacement = texture2D(uAccumulatedDisplacement, vTexCoord);
+            vec4 modeShape = texture2D(uModalTexture, vTexCoord);
+            
+            // Compute the additional displacement
+            vec2 addDisplacement = vec2(modeShape.r * q.x - modeShape.g * q.y, modeShape.b * q.x - modeShape.a * q.y);
+            
+            // Accumulate the new displacement
+            vec4 newDisplacement = vec4(currDisplacement.xy + addDisplacement, 0.0, 1.0);
+            
+            gl_FragColor = newDisplacement;
+        }
+    </script>
+    <script src="simple.js"></script>
+</body>
+
+</html>
